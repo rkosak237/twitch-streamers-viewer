@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" >
+
+<head>
+  <meta charset="UTF-8">
+  <title>Twitch streamers viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+  <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+<link rel='stylesheet prefetch' href='https://cdnjs.cloudflare.com/ajax/libs/foundation/6.3.0/css/foundation.min.css'>
+
+      <link rel="stylesheet" href="css/style.css">
+
+  
+</head>
+
+<body>
+
+  <html>
+  <body>
+  <main class="row">
+    <section class="large-centered head-container">
+      <div class="container-headers large-11 medium-11 small-12 large-centered medium-centered small-centered">
+        <h1>twitch streamers</h1>
+      </div>
+      
+      <!---App header and btns -->
+      <div class="large-6 medium-12 small-12 columns large-centered medium-centered small-centered">
+          <button id="btnAllstreamers" class="large-3 medium-12 small-12 columns btns">all</button>
+          <button id="btnOnlinestreamers" class="large-5 medium-12 small-12 columns btns">online</button>
+          <button id="btnOfflinestreamers" class="large-4 medium-12 small-12 columns btns">offline</button>
+      </div>
+    <!---App header and btns -->
+      
+       <!-- search-->
+       <div class="results-container__searchbar large-10 medium-8 small-10  large-centered medium-centered small-centered">
+            <input type="text" id="searchStreamer" class="large-9 medium-8 small-8" placeholder="Search...">
+            <i class="fa fa-search fa-3x icon large-1 medium-1 small-1" aria-hidden="true"></i>
+        </div>
+      <!-- search-->
+      
+    </section>
+    <section class="large-centered results-container">
+      <!--display results-->
+        <ul id="result" class="large-10 medium-11 small-12 columns large-centered medium-centered small-centered">
+        </ul>
+      <!--display results-->
+      
+    </section>
+  </main>
+</body>
+</html>
+  
+  
+
+    <script  src="js/index.js"></script>
+
+
+
+
+</body>
+
+</html>
