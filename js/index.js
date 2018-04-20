@@ -1,17 +1,25 @@
-(function() {
+// (function() {
+//arrays
+    const   arrOfStreams = [],
+            arrOfOffline = [],
+            streamer = ["ESL_SC2", "followgrubby", "kinggeorgetv", "redbull", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"],
+            arr = [],
+            arrOfLinks = [],
+            offlineStreams = [],
+            
+            //endpoints and id
+            endpointStreams = 'https://api.twitch.tv/kraken/streams/',
+            endpointChannels = 'https://api.twitch.tv/kraken/channels/',
+            twitchId = '?client_id=953x2pkg7mdtrsnqd9tpnf9w6gm0xf',
+            //buttons
+            Allstreamers = document.getElementById('btnAllstreamers'),
+            Onlinestreamers = document.getElementById('btnOnlinestreamers'),
+            Offlinestreamers = document.getElementById('btnOfflinestreamers'),
+            button = document.querySelectorAll('.btns'),
+            visibleAll = document.querySelectorAll('.online, .offline'),
+            visibleOffline = document.querySelectorAll('.offline'),
+            visibleOnline = document.querySelectorAll('.online');
 
-    const arrOfStreams = [];
-    const arrOfOffline = [];
-    const streamer = ["ESL_SC2", "followgrubby", "kinggeorgetv", "redbull", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];
-
-    //buttons
-    const Allstreamers = document.getElementById('btnAllstreamers');
-    const Onlinestreamers = document.getElementById('btnOnlinestreamers');
-    const Offlinestreamers = document.getElementById('btnOfflinestreamers');
-    const button = document.querySelectorAll('.btns');
-    const visibleAll = document.querySelectorAll('.online, .offline');
-    const visibleOffline = document.querySelectorAll('.offline');
-    const visibleOnline = document.querySelectorAll('.online');
 
     Allstreamers.addEventListener('click', filterAll);
     Onlinestreamers.addEventListener('click', filterOnline);
@@ -52,107 +60,59 @@
 
     //--------------------Setting url
 
-    function setUrl(e) {
-        e.map((stream) => {
-            let url = 'https://api.twitch.tv/kraken/streams/' + stream + '?client_id=953x2pkg7mdtrsnqd9tpnf9w6gm0xf';
-            getData(url);
+    function setUrl(endpoint, element, fn) {
+        element.map((stream) => {
+            let url = endpoint + stream + twitchId;
+           arrOfLinks.push(url);
         });
     }
-    setUrl(streamer);
+    setUrl(endpointStreams, streamer);
     //--------------------Setting url
 
 
     //--------------------Pull data 
 
-    function getData(url) {
-        return new Promise((resolve) => {
-            let rawData = '';
-            let data = '';
-            let request = new XMLHttpRequest();
+Promise.all(arrOfLinks.map(url => 
+    fetch(url)
+    .then(resp => resp.json())
+    .then(data => arr.push(data))))
+    .then(() => {
 
-            request.open('GET', url, true);
-            request.onload = function() {
-                if (this.status >= 200 & this.status < 400) {
-                    rawData = this.response;
-                    data = JSON.parse(this.response);
-                    resolve(data);
-                    if (data.stream !== null) {
+      let onlineStreams = arr.filter((x) => x.stream !== null);
+        console.log(onlineStreams)
+            onlineStreams.map(x => {
+                return appendOnline(
+                    x.stream.channel.logo, 
+                    x.stream.channel.name, 
+                    x.stream.channel.game, 
+                    x.stream.stream_type, 
+                    x.stream.channel.url);
+            });
+    })
+    .then(() => {
+        let offlineStreams = arr.filter((x) => x.stream == null)
+        .map(y => y._links.self.slice(37))
+        .map(channelName => endpointChannels + channelName + twitchId);
+        
+        Promise.all(offlineStreams.map(url => 
+            fetch(url)
+            .then(resp => resp.json())
+            .then(data => arrOfOffline.push(data))))
+        .then(() => {
+            let offlineStreamer = arrOfOffline.map(x => {
+                return appendOffline(
+                    x.logo, 
+                    x.name, 
+                    x._links.self);
+            });
 
-                        const fetchedDataOnline = {
-                            whatsPlayin: data.stream.game,
-                            preview: data.stream.channel.logo,
-                            channelName: data.stream.channel.name,
-                            streaming: data.stream.channel.game,
-                            link: data.stream.channel.url,
-                            live: data.stream.stream_type
-                        }
-                        appendOnline(fetchedDataOnline.preview, fetchedDataOnline.channelName, fetchedDataOnline.whatsPlayin, fetchedDataOnline.streaming, fetchedDataOnline.live, fetchedDataOnline.link);
 
-                    } else {
-                        function getUser() {
-                            const toSlice = data._links.self;
-                            const afterSlice = toSlice.slice(37);
-                            arrOfOffline.push(afterSlice);
-
-                            for (let i = 0; i < arrOfOffline.length; i++) {
-                                let url = 'https://api.twitch.tv/kraken/channels/' + arrOfOffline[i] + '?client_id=953x2pkg7mdtrsnqd9tpnf9w6gm0xf';
-                                var request = new XMLHttpRequest();
-                                //tutaj się psuje przy zmianie na const/let
-                                request.open('GET', url, true);
-
-                            }
-
-                            // arrOfOffline.map(x => {
-                            //   let url = 'https://api.twitch.tv/kraken/channels/' + x + '?client_id=953x2pkg7mdtrsnqd9tpnf9w6gm0xf';
-                            //   var request = new XMLHttpRequest();
-                            //       //tutaj się psuje przy zmianie na const/let
-                            //       request.open('GET', url, true);
-                            // });
-                            //load data
-                            request.onload = function() {
-                                if (this.status >= 200 & this.status < 400) {
-                                    // Success!
-                                    const result = JSON.parse(request.response);
-
-                                    const fetchedDataOffline = {
-                                        name: result.display_name,
-                                        logotype: result.logo,
-                                        currently: result.status,
-                                        link: result._links.self
-                                    }
-
-                                    appendOffline(fetchedDataOffline.logotype, fetchedDataOffline.name, fetchedDataOffline.link);
-
-                                } else {
-                                    console.log("We reached our target server, but it returned an error");
-                                }
-                            };
-                            request.onerror = function() {
-                                // There was a connection error of some sort
-                            };
-                            request.send();
-
-                        }
-                        getUser();
-                        //Call to Channels
-                    }
-
-                } else {
-                    console.log("We reached our target server, but it returned an error");
-                }
-            }
-            request.send();
         })
-    }
-
-    //--------------------Pull data 
-
-
-
+    })
 
     //--------------------append results to elements
 
-    function appendOnline(thumbnail, name, play, subject, status, url) {
+    function appendOnline(thumbnail, name, play, status, url) {
         document.getElementById("result").innerHTML +=
             `
         <li class="large-12 medium-12 small-12 columns list-style online active">
@@ -172,7 +132,6 @@
 `;
     }
 
-
     function appendOffline(thumbnail, name, url) {
         document.getElementById("result").innerHTML +=
             `
@@ -188,11 +147,9 @@
                 <a class="results-container__statusOffline" href="#" >Offline</a>
              </span>
             </div>
-
         </li>
 `
     }
-
-
+// console.log(arr);
     //--------------------append results to elements
-})();
+// })();
