@@ -1,4 +1,4 @@
-// (function() {
+(function() {
 //arrays
     const   arrOfStreams = [],
             arrOfOffline = [],
@@ -6,7 +6,7 @@
             arr = [],
             arrOfLinks = [],
             offlineStreams = [],
-            
+
             //endpoints and id
             endpointStreams = 'https://api.twitch.tv/kraken/streams/',
             endpointChannels = 'https://api.twitch.tv/kraken/channels/',
@@ -79,7 +79,7 @@ Promise.all(arrOfLinks.map(url =>
     .then(() => {
 
       let onlineStreams = arr.filter((x) => x.stream !== null);
-        console.log(onlineStreams)
+        //console.log(onlineStreams)
             onlineStreams.map(x => {
                 return appendOnline(
                     x.stream.channel.logo, 
@@ -152,4 +152,4 @@ Promise.all(arrOfLinks.map(url =>
     }
 // console.log(arr);
     //--------------------append results to elements
-// })();
+})();
